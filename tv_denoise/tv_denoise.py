@@ -86,8 +86,7 @@ def tv_denoise(image, strength_luma, strength_chroma, callback=None, step_size=1
         # Calculate the step size per channel
         step_size_luma = step_size / (strength_luma + 1)
         step_size_chroma = step_size / (strength_chroma + 1)
-        step_size_arr = np.float32([step_size_luma, step_size_chroma, step_size_chroma])
-        step_size_arr = step_size_arr[np.newaxis, np.newaxis, :]
+        step_size_arr = np.float32([[[step_size_luma, step_size_chroma, step_size_chroma]]])
 
         # Gradient descent step
         momentum = momentum * momentum_beta + grad * (1 - momentum_beta)
