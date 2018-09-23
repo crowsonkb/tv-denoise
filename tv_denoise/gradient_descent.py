@@ -52,16 +52,20 @@ def eval_loss_and_grad(image, orig_image, strength_luma, strength_chroma):
 
 
 @dataclass
-class DenoiseStatus:
-    """A status object supplied to the callback specified in tv_denoise()."""
+class GradientDescentDenoiseStatus:
+    """A status object supplied to the callback specified in tv_denoise_gradient_descent()."""
     i: int
     loss: float
-    image: np.ndarray
 
 
 # pylint: disable=R0913, R0914
-def tv_denoise(image, strength_luma, strength_chroma, callback=None, step_size=1e-2, tol=1e-3):
-    """Total variation denoising."""
+def tv_denoise_gradient_descent(image,
+                                strength_luma,
+                                strength_chroma,
+                                callback=None,
+                                step_size=1e-2,
+                                tol=1e-3):
+    """Total variation image denoising with gradient descent."""
     image = image @ RGB_TO_YUV.T
     orig_image = image.copy()
     momentum = np.zeros_like(image)
@@ -75,7 +79,7 @@ def tv_denoise(image, strength_luma, strength_chroma, callback=None, step_size=1
         loss, grad = eval_loss_and_grad(image, orig_image, strength_luma, strength_chroma)
 
         if callback is not None:
-            callback(DenoiseStatus(i, loss, image))
+            callback(GradientDescentDenoiseStatus(i, loss))
 
         # Stop iterating if the loss has not been decreasing recently
         loss_smoothed = loss_smoothed * loss_smoothing_beta + loss * (1 - loss_smoothing_beta)
@@ -93,13 +97,3 @@ def tv_denoise(image, strength_luma, strength_chroma, callback=None, step_size=1
         image -= step_size_arr / (1 - momentum_beta**i) * momentum
 
     return image @ YUV_TO_RGB.T
-
-
-def to_float32(image):
-    """Converts a uint8 image, in numpy or Pillow format, to float32."""
-    return np.float32(image) / 255
-
-
-def to_uint8(image):
-    """Converts a float32 image to a numpy uint8 image."""
-    return np.uint8(np.round(np.clip(image, 0, 1) * 255))
