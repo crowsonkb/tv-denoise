@@ -64,7 +64,7 @@ def tv_denoise_gradient_descent(image,
                                 strength_chroma,
                                 callback=None,
                                 step_size=1e-2,
-                                tol=1e-3):
+                                tol=3.2e-3):
     """Total variation image denoising with gradient descent."""
     image = image @ RGB_TO_YUV.T
     orig_image = image.copy()
