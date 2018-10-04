@@ -93,7 +93,8 @@ def tv_denoise_gradient_descent(image,
         step_size_arr = np.float32([[[step_size_luma, step_size_chroma, step_size_chroma]]])
 
         # Gradient descent step
-        momentum = momentum * momentum_beta + grad * (1 - momentum_beta)
+        momentum *= momentum_beta
+        momentum += grad * (1 - momentum_beta)
         image -= step_size_arr / (1 - momentum_beta**i) * momentum
 
     return image @ YUV_TO_RGB.T
