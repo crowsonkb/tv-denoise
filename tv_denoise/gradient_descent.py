@@ -58,7 +58,7 @@ class GradientDescentDenoiseStatus:
     loss: float
 
 
-# pylint: disable=R0913, R0914
+# pylint: disable=too-many-arguments, too-many-locals
 def tv_denoise_gradient_descent(image,
                                 strength_luma,
                                 strength_chroma,
